@@ -1,20 +1,21 @@
 import React from 'react'
-// src/components/StarshipList/StarshipList.jsx
 import StarshipCard from '../StarshipCard/StarshipCard';
 
 
-const StarshipList = ({ starship }) => {
+const StarshipList = ({ starships }) => {
+ 
+  if (!starships || starships.length === 0) {
+     return <p>No starships found.</p>;
+  }
+
   return (
-    <div >
-      {starship.length > 0 ? (
-        starship.map((star, index) => (
-          <StarshipCard key={index} starship={star} />
-        ))
-      ) : (
-        <p>No starships found failed to render data</p>
-      )}
-    </div>
+  <>
+  <div className='continer'> 
+      {starships.map((star, index) => (
+        <StarshipCard key={index} starship={star} />
+      ))}
+      </div>
+    </>
   );
 };
-
 export default StarshipList;

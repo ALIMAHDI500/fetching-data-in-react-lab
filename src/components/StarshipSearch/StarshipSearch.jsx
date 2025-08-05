@@ -22,18 +22,19 @@ const StarshipSearch = ({onSearch,onReset,count,prevSearchTerm,searchActive,}) =
          
       </div>
       <form onSubmit={handleSubmit}>
-       <b><label for="searchTerm"> Search Tearm</label></b><input
+       <b><label htmlFor="searchTerm"> Search Tearm</label></b><input
           type="text"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
         <button type="submit">Search</button>
         {searchActive && (
-          <button type="button" onClick={onReset}>
-            Show all starships
+          <button type="button" onClick={onReset} >
+           Reset
           </button>
         )}
       </form>
+      <h2>StarShips</h2>
        <p>
           <strong>Number of results:</strong> {count}
         </p>

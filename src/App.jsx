@@ -5,31 +5,49 @@ import StarshipList from './components/StarshipList/StarshipList';
 const App = () => {
   const [starshipsData, setStarshipsData] = useState([]);
   const [displayedStarships, setDisplayedStarships] = useState([]);
-  const [prevSearchTerm, setPrevSearchTerm] = useState('');
+  const [prevSearchTerm, setPrevSearchTerm] = useState();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState();
   const searchActive = prevSearchTerm !== '';
 
+useEffect(() => {
 
-  useEffect(() => {
-    async function getStarships() {
-      setLoading(true);
-      setError('');
+    const fetchDefaultData = async () => {
       try {
-        const ships = await fetch();
-        setStarshipsData(ships);
-        setDisplayedStarships(ships);
-      } catch (err) {
-        setError('API error: Unable to load starships.');
+      
+        const response = await fetch("https://swapi.py4e.com/api/starships/");
+        
+       
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+      
+        const json = await response.json();
+        console.log(json.results);
+        
+       
+        setStarshipsData(json.results);
+        setDisplayedStarships(json.results);
+      } catch (error) {
+       
+        setError(error.message); 
+        console.error("Error fetching data:", error);
       } finally {
+      
         setLoading(false);
       }
-    }
-    getStarships();
-  }, []);
+    };
+
+    fetchDefaultData();
+  }, []); 
 
   const handleSearch = (term) => {
-    if (term.trim() === '') return;
+    if (!starshipsData || term.trim() === '') {
+      setDisplayedStarships(starshipsData);
+      setPrevSearchTerm('');
+      return;
+    }
     const filtered = starshipsData.filter(ship =>
       ship.name.toLowerCase().includes(term.toLowerCase())
     );
@@ -37,26 +55,41 @@ const App = () => {
     setPrevSearchTerm(term);
   };
 
-
   const handleReset = () => {
     setDisplayedStarships(starshipsData);
     setPrevSearchTerm('');
   };
 
   return (
-    <main>
-      <h1>Star Wars API</h1>
-      <StarshipSearch onSearch={handleSearch} onReset={handleReset} count={displayedStarships.length} prevSearchTerm={prevSearchTerm}
-       searchActive={searchActive}
-      />
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p >{error}</p>
-      ) : (
-        <StarshipList starships={displayedStarships} />
-      )}
-    </main>
+    <div >
+      <div >
+        <header>
+          <h1 >
+            Star Wars API
+          </h1>
+        </header>
+        
+        <StarshipSearch
+          onSearch={handleSearch}
+          onReset={handleReset}
+          count={displayedStarships.length}
+          prevSearchTerm={prevSearchTerm}
+          searchActive={searchActive}
+        />
+        
+        {loading ? (
+          <div>
+            <p>Loading...</p>
+          </div>
+        ) : error ? (
+          <div>
+            <p >Error: {error}</p>
+          </div>
+        ) : (
+          <StarshipList starships={displayedStarships} /> 
+        )}
+      </div>
+    </div>
   );
 };
 
